@@ -1,5 +1,6 @@
 import pygame
 from pygame import Vector2, math
+from pygame import scrap
 from pygame.locals import *
 import pygame.display
 import pygame.event
@@ -26,11 +27,12 @@ Screen_Width = 1280
 Screen_Height = 720
 Screen = pygame.display.set_mode([Screen_Width, Screen_Height])
 pygame.display.set_caption("Snakes")
+score = 0
 
 # Game Variables
 FPS = 60
 clock = pygame.time.Clock()
-font = pygame.font.SysFont('footlight', 30)
+font = pygame.font.SysFont('footlight', 40)
 Game_Images = {}
 
 """ Loading Images  """
@@ -78,14 +80,35 @@ snake_speed = Vector2(1, 0)
 MOVE_SNAKE = pygame.USEREVENT
 pygame.time.set_timer(MOVE_SNAKE, 200)
 
+def text_screen(text, color, x, y):
+    text = font.render(text, True, color)
+    Screen.blit(text, (x, y))
+
+def welcome_screen():
+    exit_game = False
+    while not exit_game:
+        img = pygame.image.load("welcome.png")
+        
+        Screen.blit(img, [0, 0])
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit_game = True
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == K_SPACE:
+                    return
+
+            pygame.display.update()
+            clock.tick(60)
 
 def eat_food():
-    global food_position, snake_list, food_rect, food_x, food_y, add_block
+    global food_position, snake_list, food_rect, food_x, food_y, add_block, score
 
     food_img = pygame.image.load("Graphics/food.png").convert_alpha()
     Screen.blit(food_img, food_rect)
     
     if food_position == snake_list[0]:
+        score += 1
         pygame.mixer.Sound("point.wav").play()
         food_x = random.randint(0, 26)
         food_y =  random.randint(0, 16)
@@ -147,11 +170,45 @@ def snake_graphics():
                 elif previous_block.x == 1 and next_block.y == 1 or previous_block.y == 1 and next_block.x == 1:
                     Screen.blit(Game_Images["bottomright"],(block.x * snake_x, block.y * snake_y))
 
+def update_score():
+    global score
+    f = pygame.image.load("Graphics/food.png").convert_alpha()
+    pygame.draw.rect(Screen, black, (1160, 9, 100, 40), 1)
+    Screen.blit(f, (1165, 12))
+    text_screen(f"{str(score)}", black, 1220, 12)
+
+def reset_snake():
+    global snake_list
+    snake_list = [Vector2(8, 10), Vector2(7, 10), Vector2(6, 10)]
+
+
+def snake_collisions():
+    # snake collision with wall
+    if snake_list[0].x < 0: 
+        reset_snake()
+        
+    elif snake_list[0].x > 31:
+        reset_snake()
+        
+    elif snake_list[0].y < 0:
+        reset_snake()
+
+    elif snake_list[0].y > 17:
+        reset_snake()
+
+    # Snake Collide in itself
+    for block in snake_list[1:]:
+        if block == snake_list[0]:
+            reset_snake()
+    
+# welcome_screen()
 while True:
     Screen.blit(bgimg, (0, 0))
+
     eat_food()
     snake_graphics()
-
+    update_score()
+    snake_collisions()
 
     for event in pygame.event.get():    
         if event.type == pygame.QUIT:
@@ -186,6 +243,9 @@ while True:
             if event.key == K_DOWN:
                 if snake_speed.y != -1:
                     snake_speed = Vector2(0, 1)
+
+
+
 
     pygame.display.update()
     clock.tick(FPS)
