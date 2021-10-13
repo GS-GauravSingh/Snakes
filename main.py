@@ -86,6 +86,7 @@ def eat_food():
     Screen.blit(food_img, food_rect)
     
     if food_position == snake_list[0]:
+        pygame.mixer.Sound("point.wav").play()
         food_x = random.randint(0, 26)
         food_y =  random.randint(0, 16)
         food_position = (Vector2(food_x, food_y))
@@ -148,7 +149,6 @@ def snake_graphics():
 
 while True:
     Screen.blit(bgimg, (0, 0))
-    # pygame.draw.rect(Screen, red, food_rect)
     eat_food()
     snake_graphics()
 
