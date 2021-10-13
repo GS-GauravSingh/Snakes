@@ -36,11 +36,26 @@ Game_Images = {}
 """ Loading Images  """
 
 # Head
-Game_Images["head_right"] = pygame.image.load("Graphics/head_right1.png").convert_alpha()
-Game_Images["head_left"] = pygame.image.load("Graphics/head_left2.png").convert_alpha()
+Game_Images["head_right"] = pygame.image.load("Graphics/head_right.png").convert_alpha()
+Game_Images["head_left"] = pygame.image.load("Graphics/head_left.png").convert_alpha()
 Game_Images["head_up"] = pygame.image.load("Graphics/head_up.png").convert_alpha()
 Game_Images["head_down"] = pygame.image.load("Graphics/head_down.png").convert_alpha()
 
+# Tail
+Game_Images["tail_right"] = pygame.image.load("Graphics/tail_right.png").convert_alpha()
+Game_Images["tail_left"] = pygame.image.load("Graphics/tail_left.png").convert_alpha()
+Game_Images["tail_up"] = pygame.image.load("Graphics/tail_up.png").convert_alpha()
+Game_Images["tail_down"] = pygame.image.load("Graphics/tail_down.png").convert_alpha()
+
+# Body
+Game_Images["h_body"] = pygame.image.load("Graphics/body_horizontal.png").convert_alpha()
+Game_Images["v_body"] = pygame.image.load("Graphics/body_vertical.png").convert_alpha()
+
+# Body Curves
+Game_Images["topleft"] = pygame.image.load("Graphics/body_tl.png").convert_alpha()
+Game_Images["topright"] = pygame.image.load("Graphics/body_tr.png").convert_alpha()
+Game_Images["bottomleft"] = pygame.image.load("Graphics/body_bl.png").convert_alpha()
+Game_Images["bottomright"] = pygame.image.load("Graphics/body_br.png").convert_alpha()
 """--------------------------------------------------------------------------------------------"""
 
 # Background Image
@@ -48,15 +63,15 @@ bgimg = pygame.image.load("Graphics/background.png").convert_alpha()
 bgimg = pygame.transform.scale2x(bgimg)
 
 # Food
-food_x = random.randint(0, 22)
-food_y =  random.randint(0, 22)
+food_x = random.randint(0, 26)
+food_y =  random.randint(0, 16)
 food_position = (Vector2(food_x, food_y))
-food_rect = pygame.Rect(food_position.x * 22, food_position.y * 22, 20, 20)
+food_rect = pygame.Rect(food_position.x * 40, food_position.y * 40, 40, 40)
 add_block = False
 
 # Snake
-snake_x = 22
-snake_y = 22
+snake_x = 40
+snake_y = 40
 snake_list = [Vector2(8, 10), Vector2(7, 10), Vector2(6, 10)]
 snake_speed = Vector2(1, 0)
 
@@ -66,38 +81,76 @@ pygame.time.set_timer(MOVE_SNAKE, 200)
 
 def eat_food():
     global food_position, snake_list, food_rect, food_x, food_y, add_block
+
+    food_img = pygame.image.load("Graphics/food.png").convert_alpha()
+    Screen.blit(food_img, food_rect)
+    
     if food_position == snake_list[0]:
-        food_x = random.randint(0, 50)
-        food_y =  random.randint(0, 30)
+        food_x = random.randint(0, 26)
+        food_y =  random.randint(0, 16)
         food_position = (Vector2(food_x, food_y))
-        food_rect = pygame.Rect(food_position.x * 22, food_position.y * 22, 20, 20)
+        food_rect = pygame.Rect(food_position.x * 40, food_position.y * 40, 40, 40)
         add_block = True
 
-
-while True:
-    Screen.blit(bgimg, (0, 0))
-    pygame.draw.rect(Screen, red, food_rect)
-    eat_food()
-
-
-
+def snake_graphics():
+    global snake_list, snake_x, snake_y
 
     for index, block in enumerate(snake_list):
         if index == 0:
-            Screen.blit(Game_Images["head_right"],(block.x * snake_x, block.y * snake_y))
+            head_direction = snake_list[0] -  snake_list[1]
+            if head_direction == Vector2(-1,0):
+                Screen.blit(Game_Images["head_left"],(block.x * snake_x, block.y * snake_y))
+
+            if head_direction == Vector2(1,0):
+                Screen.blit(Game_Images["head_right"],(block.x * snake_x, block.y * snake_y))
+
+            if head_direction == Vector2(0,1):
+                Screen.blit(Game_Images["head_down"],(block.x * snake_x, block.y * snake_y))
+
+            if head_direction == Vector2(0,-1):
+                Screen.blit(Game_Images["head_up"],(block.x * snake_x, block.y * snake_y))
+
+
+        elif index == len(snake_list) - 1:
+            tail_direction = snake_list[-1] -  snake_list[-2]
+            if tail_direction == Vector2(-1,0):
+                Screen.blit(Game_Images["tail_left"],(block.x * snake_x, block.y * snake_y))
+
+            if tail_direction == Vector2(1,0):
+                Screen.blit(Game_Images["tail_right"],(block.x * snake_x, block.y * snake_y))
+
+            if tail_direction == Vector2(0,-1):
+                Screen.blit(Game_Images["tail_up"],(block.x * snake_x, block.y * snake_y))
+
+            if tail_direction == Vector2(0,1):
+                Screen.blit(Game_Images["tail_down"],(block.x * snake_x, block.y * snake_y))
+
 
         else:
-            pygame.draw.rect(Screen, white, (block.x * snake_x, block.y * snake_y, 20, 20))
+            previous_block = snake_list[index + 1] - block
+            next_block = snake_list[index - 1] - block
+            if previous_block.x == next_block.x:
+                Screen.blit(Game_Images["v_body"],(block.x * snake_x, block.y * snake_y))
+            elif previous_block.y == next_block.y:
+                Screen.blit(Game_Images["h_body"],(block.x * snake_x, block.y * snake_y))
+            else:
+                if previous_block.x == -1 and next_block.y == -1 or previous_block.y == -1 and next_block.x == -1:
+                    Screen.blit(Game_Images["topleft"],(block.x * snake_x, block.y * snake_y))
 
+                elif previous_block.x == -1 and next_block.y == 1 or previous_block.y == 1 and next_block.x == -1:
+                    Screen.blit(Game_Images["bottomleft"],(block.x * snake_x, block.y * snake_y))
 
-    head_direction = snake_list[1] -  snake_list[0]
-    if head_direction == Vector2(1,0):
-        Game_Images["head_right"] = Game_Images["head_left"]
-    if head_direction == Vector2(-1,0):
-        Game_Images["head_right"]
-            
+                elif previous_block.x == 1 and next_block.y == -1 or previous_block.y == -1 and next_block.x == 1:
+                    Screen.blit(Game_Images["topright"],(block.x * snake_x, block.y * snake_y))
 
+                elif previous_block.x == 1 and next_block.y == 1 or previous_block.y == 1 and next_block.x == 1:
+                    Screen.blit(Game_Images["bottomright"],(block.x * snake_x, block.y * snake_y))
 
+while True:
+    Screen.blit(bgimg, (0, 0))
+    # pygame.draw.rect(Screen, red, food_rect)
+    eat_food()
+    snake_graphics()
 
 
     for event in pygame.event.get():    
