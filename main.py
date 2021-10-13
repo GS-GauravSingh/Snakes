@@ -201,7 +201,7 @@ def snake_collisions():
         if block == snake_list[0]:
             reset_snake()
     
-# welcome_screen()
+welcome_screen()
 while True:
     Screen.blit(bgimg, (0, 0))
 
