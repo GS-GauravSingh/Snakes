@@ -77,8 +77,10 @@ snake_y = 40
 snake_list = [Vector2(8, 10), Vector2(7, 10), Vector2(6, 10)]
 snake_speed = Vector2(1, 0)
 
+
+
 MOVE_SNAKE = pygame.USEREVENT
-pygame.time.set_timer(MOVE_SNAKE, 200)
+pygame.time.set_timer(MOVE_SNAKE, 100)
 
 # Creating HiScore file
 if (not os.path.exists("HiScore.txt")):
@@ -182,7 +184,7 @@ def snake_graphics():
                     Screen.blit(Game_Images["bottomright"],(block.x * snake_x, block.y * snake_y))
 
 def update_score():
-    global score, hiscore
+    global score, hiscore, speed
     f = pygame.image.load("Graphics/food.png").convert_alpha()
     pygame.draw.rect(Screen, black, (1160, 9, 100, 40), 1)
     Screen.blit(f, (1165, 12))
@@ -192,7 +194,6 @@ def update_score():
     pygame.draw.rect(Screen, black, (6, 8, 190, 40), 1)
     text_screen(f"HiScore:{str(hiscore)}", black, 10, 12)
     
-
 def reset_snake():
     global snake_list, score
     score = 0
