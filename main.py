@@ -10,7 +10,7 @@ import pygame.image
 import pygame.transform
 import pygame.font
 import pygame.mixer
-import random, sys
+import random, sys, os
 
 from pygame.math import Vector2
 pygame.mixer.init()
@@ -79,6 +79,17 @@ snake_speed = Vector2(1, 0)
 
 MOVE_SNAKE = pygame.USEREVENT
 pygame.time.set_timer(MOVE_SNAKE, 200)
+
+# Creating HiScore file
+if (not os.path.exists("HiScore.txt")):
+    with open("HiScore.txt", "w") as f:
+        f.write("0")
+
+else:
+    with open("HiScore.txt", "r") as f:
+        hiscore = f.read()
+
+
 
 def text_screen(text, color, x, y):
     text = font.render(text, True, color)
@@ -184,28 +195,32 @@ def reset_snake():
 def snake_collisions():
     global score
     # snake collision with wall
-    if snake_list[0].x < 0: 
-        score = 0 
+    if snake_list[0].x < 0 or snake_list[0].x > 31: 
+        with open("HiScore.txt", "w") as f:
+            f.write(str(score))
+        score = 0
         reset_snake()
         
-    elif snake_list[0].x > 31:
-        score = 0 
-        reset_snake()
         
-    elif snake_list[0].y < 0:
+    elif snake_list[0].y < 0 or snake_list[0].y > 17:
+        with open("HiScore.txt", "w") as f:
+            f.write(str(score))
         score = 0 
         reset_snake()
 
-    elif snake_list[0].y > 17:
-        score = 0 
-        reset_snake()
 
     # Snake Collide in itself
     for block in snake_list[1:]:
         if block == snake_list[0]:
+            with open("HiScore.txt", "w") as f:
+                f.write(str(score))
+            score = 0
             reset_snake()
     
+             
+    
 welcome_screen()
+
 while True:
     Screen.blit(bgimg, (0, 0))
 
@@ -253,4 +268,5 @@ while True:
 
     pygame.display.update()
     clock.tick(FPS)
-        
+
+
