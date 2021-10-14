@@ -182,14 +182,20 @@ def snake_graphics():
                     Screen.blit(Game_Images["bottomright"],(block.x * snake_x, block.y * snake_y))
 
 def update_score():
-    global score
+    global score, hiscore
     f = pygame.image.load("Graphics/food.png").convert_alpha()
     pygame.draw.rect(Screen, black, (1160, 9, 100, 40), 1)
     Screen.blit(f, (1165, 12))
     text_screen(f"{str(score)}", black, 1210, 12)
+    if score > int(hiscore):
+        hiscore = score 
+    pygame.draw.rect(Screen, black, (6, 8, 190, 40), 1)
+    text_screen(f"HiScore:{str(hiscore)}", black, 10, 12)
+    
 
 def reset_snake():
-    global snake_list
+    global snake_list, score
+    score = 0
     snake_list = [Vector2(8, 10), Vector2(7, 10), Vector2(6, 10)]
 
 def snake_collisions():
@@ -198,14 +204,12 @@ def snake_collisions():
     if snake_list[0].x < 0 or snake_list[0].x > 31: 
         with open("HiScore.txt", "w") as f:
             f.write(str(score))
-        score = 0
         reset_snake()
         
         
     elif snake_list[0].y < 0 or snake_list[0].y > 17:
         with open("HiScore.txt", "w") as f:
             f.write(str(score))
-        score = 0 
         reset_snake()
 
 
@@ -214,7 +218,6 @@ def snake_collisions():
         if block == snake_list[0]:
             with open("HiScore.txt", "w") as f:
                 f.write(str(score))
-            score = 0
             reset_snake()
     
              
