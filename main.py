@@ -175,25 +175,29 @@ def update_score():
     f = pygame.image.load("Graphics/food.png").convert_alpha()
     pygame.draw.rect(Screen, black, (1160, 9, 100, 40), 1)
     Screen.blit(f, (1165, 12))
-    text_screen(f"{str(score)}", black, 1220, 12)
+    text_screen(f"{str(score)}", black, 1210, 12)
 
 def reset_snake():
     global snake_list
     snake_list = [Vector2(8, 10), Vector2(7, 10), Vector2(6, 10)]
 
-
 def snake_collisions():
+    global score
     # snake collision with wall
     if snake_list[0].x < 0: 
+        score = 0 
         reset_snake()
         
     elif snake_list[0].x > 31:
+        score = 0 
         reset_snake()
         
     elif snake_list[0].y < 0:
+        score = 0 
         reset_snake()
 
     elif snake_list[0].y > 17:
+        score = 0 
         reset_snake()
 
     # Snake Collide in itself
